@@ -1,16 +1,32 @@
 #-*- coding:utf-8 -*-
 import logging
+import types
 from ssl import cert_time_to_seconds
 from winerror import ERROR_INVALID_LOGON_HOURS
 from cookielib import DAYS
 
 # Define const variable for LOG Level.
+# CRITICAL    50
+# ERROR       40
+# WARNING     30
+# INFO        20
+# DEBUG       10
+# NOTSET      0  
 CRITICAL=logging.CRITICAL
 ERROR=logging.ERROR
 WARNING=logging.WARNING
 INFO=logging.INFO
 DEBUG=logging.DEBUG
 NOTSET=logging.NOTSET
+
+lvlStrDict = {
+    "CRITICAL":CRITICAL,
+    "ERROR":ERROR,
+    "WARNING":WARNING,
+    "INFO":INFO,
+    "DEBUG":DEBUG,
+    "NOTSET":NOTSET
+}
 
 # logging output to streams such as sys.stdout, sys.stder
 class StreamHandler:
@@ -56,20 +72,26 @@ class LogHandler:
     def __init__(self, log_name):
         self.logger = logging.getLogger(log_name)
         self.defaultFmt = '%(asctime)s|%(levelname)s|%(filename)s(%(lineno)s):%(message)s'
-
-        # CRITICAL    50
-        # ERROR       40
-        # WARNING     30
-        # INFO        20
-        # DEBUG       10
-        # NOTSET      0        
+      
         self.logLvl = logging.DEBUG
         self.logLevel(self.logLvl)
-        
+    
+    def lvlStrToValue(self, lvlStr):
+        if lvlStrDict.has_key(lvlStr):
+            return lvlStrDict[lvlStr]
+        else:
+            return NOTSET
+    
     def logLevel(self, lvl = None):
         if lvl == None:
             return self.logLvl
         else:
+            if type(lvl) == types.StringType:
+                lvl = lvl.upper()
+                self.logLvl = self.lvlStrToValue(lvl)
+            else:
+                self.logLvl = lvl
+            
             self.logger.setLevel(self.logLvl)
             
     # asctime     %(asctime)s     Human-readable time when the LogRecord was created. By default this is of the form ‘2003-07-08 16:49:45,896’ (the numbers after the comma are millisecond portion of the time).
@@ -152,6 +174,8 @@ class LogHandler:
 if __name__ == "__main__":
     print "Program test"
     logMng = LogHandler("Test")
+    logMng.logLevel("CRITICAL")
+    print logMng.logLevel()
     logMng.attachedStreamHandler()
     
     logMng.debugMesg("Test Message")

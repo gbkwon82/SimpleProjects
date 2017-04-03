@@ -89,3 +89,5 @@ if __name__ == "__main__":
     config = ConfigHandler()
     config.loadConfig("test.conf")
     print config.getItems("Test")
+    print config.getConfValue("Test1", "kwongb")
+    print config.getConfValue("Test2", "kwongb")
