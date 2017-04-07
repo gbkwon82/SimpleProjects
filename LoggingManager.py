@@ -40,10 +40,10 @@ class StreamHandler:
     
 # logging output to a disk file
 class FileHandler:
-    def __init__(self, file_path):
+    def __init__(self, file_path, mode='a'):
         # FileHandler(filename, mode='a', encoding=None, delay=False)
         # delay : then file opening is deferred until the first call to emit()
-        self.fileHnd = logging.FileHandler(file_path)
+        self.fileHnd = logging.FileHandler(file_path, mode)
     
     def getHandler(self):
         return self.fileHnd
@@ -71,7 +71,7 @@ class TimeRotatingFileHandler:
 class LogHandler:
     def __init__(self, log_name):
         self.logger = logging.getLogger(log_name)
-        self.defaultFmt = '%(asctime)s|%(levelname)s|%(filename)s(%(lineno)s):%(message)s'
+        self.defaultFmt = '%(asctime)s|%(levelname)s:%(message)s'
       
         self.logLvl = logging.DEBUG
         self.logLevel(self.logLvl)
@@ -113,8 +113,8 @@ class LogHandler:
     def getDefaultFormat(self):
         return self.defaultFmt
     
-    def attachedFileHandler(self, file_path, fmt=None):
-        tmpFileHnd = FileHandler(file_path).getHandler()
+    def attachedFileHandler(self, file_path, mode='a', fmt=None):
+        tmpFileHnd = FileHandler(file_path, mode).getHandler()
         
         if None == fmt:
             fmt = self.getDefaultFormat()
