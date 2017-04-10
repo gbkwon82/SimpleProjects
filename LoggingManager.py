@@ -70,12 +70,16 @@ class TimeRotatingFileHandler:
         
 class LogHandler:
     def __init__(self, log_name):
+        # set logger instance with the specified name
         self.logger = logging.getLogger(log_name)
+        
+        
         self.defaultFmt = '%(asctime)s|%(levelname)s:%(message)s'
-      
+        
         self.logLvl = logging.DEBUG
         self.logLevel(self.logLvl)
-    
+        self.handlerList = []
+        
     def lvlStrToValue(self, lvlStr):
         if lvlStrDict.has_key(lvlStr):
             return lvlStrDict[lvlStr]
@@ -113,11 +117,17 @@ class LogHandler:
     def getDefaultFormat(self):
         return self.defaultFmt
     
+    def setFormat(self, fmt):
+        self.defaultFmt = fmt
+        tmpFormatter = self.logger.Formatter(fmt)
+        fileHandler.setFormatter(formatter)
+        streamHandler.setFormatter(formatter)
+
     def attachedFileHandler(self, file_path, mode='a', fmt=None):
         tmpFileHnd = FileHandler(file_path, mode).getHandler()
         
         if None == fmt:
-            fmt = self.getDefaultFormat()
+            fmt = self.getDefaul+tFormat()
         
         tmpFileHnd.setFormatter(logging.Formatter(fmt))
         self.logger.addHandler(tmpFileHnd)
